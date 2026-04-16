@@ -6,7 +6,7 @@ AVA Digital L.L.C., 1603 Capitol Ave Ste 415 #258343, Cheyenne, WY 82001, USA
 
 D-U-N-S: 136864260
 
-*Corresponding author: mickael@avadigital.ai*
+*Corresponding author: mikarina@avadigital.ai*
 
 *Preprint · April 2026*
 

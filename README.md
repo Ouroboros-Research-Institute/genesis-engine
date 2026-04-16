@@ -204,11 +204,11 @@ See [`CITATION.cff`](CITATION.cff) for machine-readable metadata.
 ## Contact
 
 **Mickaël Farina**
-AVADSA Consulting LLC
-1712 Pioneer Ave, Suite 2011
+AVA Digital L.L.C.
+1603 Capitol Ave Ste 415 #258343
 Cheyenne, WY 82001, USA
 D-U-N-S: 136864260
-Email: mickaelfarinavance@yahoo.com
+Email: mikarina@avadigital.ai
 
 ---
 

@@ -257,9 +257,7 @@ The transition from matter to life is not a singularity requiring extraordinary 
 
 ## Acknowledgments
 
-The Genesis Engine simulation, statistical analysis, interactive visualization dashboard, and manuscript preparation were developed with substantial assistance from Anthropic's Claude (as a conversational research and writing partner) and Claude Code (Anthropic's agentic coding system, running locally on the author's Apple M1 Ultra workstation). Claude contributed to simulation architecture design, identified and corrected a critical scientific issue during development regarding the distinction between classical Turing bifurcation and general spatial autocorrelation (Section 5.2), assisted in drafting the manuscript, and served as an editorial reviewer. Claude Code executed the implementation, debugging, Monte Carlo runs, figure generation, and dashboard development. All scientific direction, hypothesis formulation, interpretation, and final editorial decisions were made by the author. Computational resources were provided by the author's local workstation. The author thanks Andrzej Odrzywolek for public dissemination of the EML operator framework, which motivated reflection on minimal generating sets in self-organizing systems.*
-
-*\*Odrzywolek (2026) established that all elementary mathematical functions reduce to recursive application of a single binary operator plus a single constant. The Genesis Engine finding exhibits analogous structure in a different domain — agency as a minimal ordered sequence of three coupled mechanisms. Whether this parallel reflects a deeper principle or is coincidental is beyond the scope of this paper.*
+The Genesis Engine simulation, statistical analysis, interactive visualization dashboard, and manuscript preparation were developed with substantial assistance from Anthropic's Claude (as a conversational research and writing partner) and Claude Code (Anthropic's agentic coding system, running locally on the author's Apple M1 Ultra workstation). Claude contributed to simulation architecture design, identified and corrected a critical scientific issue during development regarding the distinction between classical Turing bifurcation and general spatial autocorrelation (Section 5.2), assisted in drafting the manuscript, and served as an editorial reviewer. Claude Code executed the implementation, debugging, Monte Carlo runs, figure generation, and dashboard development. All scientific direction, hypothesis formulation, interpretation, and final editorial decisions were made by the author. Computational resources were provided by the author's local workstation.
 
 ## Data and Code Availability
 
@@ -278,8 +276,6 @@ Farina, M. (2025). Organized Dissipative Structures Drive Fitness in Evolving Pr
 Farina, M. (2025). Reaction-Diffusion Turing Pattern Formation across Planar, Spherical, Cylindrical, and Toroidal Domains. *SSRN Electronic Journal*.
 
 Farina, M. (2025). Vesicle Division Simulation: A Computational Model Bridging Membrane Physics and Biological Self-Division. *SSRN Electronic Journal*.
-
-Odrzywolek, A. (2026). All elementary functions from a single operator. *arXiv*:2603.21852.
 
 Prigogine, I. (1978). Time, structure, and fluctuations. *Science*, 201(4358), 777–785.
 

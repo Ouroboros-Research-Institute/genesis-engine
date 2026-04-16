@@ -96,7 +96,7 @@ Three independent Monte Carlo studies were conducted:
 
 **Parameter Sensitivity Ablation:** 12 conditions × 100 runs × 40,000 ticks each. Four parameters were varied individually (LIPID_SUPPLY, RD_NOISE, GROWTH_PERTURB, STAB_WINDOW), each at three values (low, baseline, high). All other parameters held at baseline. Total: 1,200 runs.
 
-**2D Sphere Study:** N = 200 runs, 40,000 ticks each, 16 workers. Each cell ran Gray-Scott on a 642-vertex icosphere with 90 RD substeps per tick and forward-Euler integration. Total runtime: 4 hours 14 minutes.
+**2D Sphere Study:** N = 200 runs, 10,000 ticks each, 16 workers. Each cell ran Gray-Scott on a 642-vertex icosphere with 90 RD substeps per tick and forward-Euler integration. Total runtime: 4 hours 14 minutes.
 
 ### 3.3 Statistical Analysis
 

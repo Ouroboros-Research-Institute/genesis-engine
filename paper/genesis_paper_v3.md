@@ -110,7 +110,7 @@ Measurement sampling occurred every 50 ticks, establishing the minimum resolvabl
 
 ### 3.4 Reproducibility
 
-All simulation code, analysis scripts, and raw output data are available at https://github.com/AVADSA25/genesis-engine [placeholder — repository URL to be finalized at submission]. The canonical statistical summary is stored in `paper_data.json` and can be regenerated from the raw CSV data using `rebuild_paper_data.py`. Division CV statistics are computed by the analysis pipeline from each run's per-cell `division_times` field and verified against the summary JSON. An interactive browser-based dashboard at https://genesis-engine.lucyvpa.com [placeholder — URL to be finalized at submission] includes live 1D ring and 2D sphere simulations, the complete Monte Carlo results, and an honest methods/limitations section.
+All simulation code, analysis scripts, and raw output data are available at https://github.com/Ouroboros-Research-Institute/genesis-engine. The canonical statistical summary is stored in `paper_data.json` and can be regenerated from the raw CSV data using `rebuild_paper_data.py`. Division CV statistics are computed by the analysis pipeline from each run's per-cell `division_times` field and verified against the summary JSON. An interactive browser-based dashboard at https://genesis-engine.lucyvpa.com includes live 1D ring and 2D sphere simulations, the complete Monte Carlo results, and an honest methods/limitations section.
 
 ---
 
@@ -263,7 +263,7 @@ The Genesis Engine simulation, statistical analysis, interactive visualization d
 
 ## Data and Code Availability
 
-All simulation code, analysis scripts, raw output data, and publication figures are archived at https://github.com/AVADSA25/genesis-engine [placeholder — repository URL to be finalized at submission]. The canonical statistical summary in `paper_data.json` can be regenerated from raw CSVs via `rebuild_paper_data.py`. An interactive dashboard demonstrating the simulation is hosted at https://genesis-engine.lucyvpa.com [placeholder — URL to be finalized at submission] and includes live 1D ring and 2D sphere visualizations, complete Monte Carlo results, and a methods-and-limitations section.
+All simulation code, analysis scripts, raw output data, and publication figures are archived at https://github.com/Ouroboros-Research-Institute/genesis-engine. The canonical statistical summary in `paper_data.json` can be regenerated from raw CSVs via `rebuild_paper_data.py`. An interactive dashboard demonstrating the simulation is hosted at https://genesis-engine.lucyvpa.com and includes live 1D ring and 2D sphere visualizations, complete Monte Carlo results, and a methods-and-limitations section.
 
 ## References
 

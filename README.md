@@ -89,7 +89,7 @@ genesis-engine/
 Requires Python 3.10 or newer.
 
 ```bash
-git clone https://github.com/AVADSA25/genesis-engine.git
+git clone https://github.com/Ouroboros-Research-Institute/genesis-engine.git
 cd genesis-engine
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt

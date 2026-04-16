@@ -229,7 +229,7 @@ async function loadJobs() {
           The <code>/api/status</code> endpoint requires the local Python server.
           To monitor running Monte Carlo and ablation jobs, clone the repo and
           launch with <code>./start.sh</code>.
-          See <a href="https://github.com/AVADSA25/genesis-engine#quickstart" target="_blank" rel="noopener">the README</a>
+          See <a href="https://github.com/Ouroboros-Research-Institute/genesis-engine#quickstart" target="_blank" rel="noopener">the README</a>
           for setup.
         </span>
       </div>`;

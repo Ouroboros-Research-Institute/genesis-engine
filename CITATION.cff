@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use this software or reproduce its results, please cite the paper and this repository."
+type: software
+title: "Genesis Engine: Sequential Assembly of Biological Agency in Evolving Protocells"
+abstract: >
+  Computational model demonstrating that division regularity (Clock) always
+  precedes pattern stability (Map) in evolving protocell populations.
+  Across 500 independent 1D Monte Carlo runs and 200 independent 2D spherical
+  manifold runs, the Clock-before-Map ordering held in 1165/1165 = 100% of
+  runs where both phase transitions occurred, with combined binomial
+  p < 10^-200 and Hedges' g = 6.34. Includes a live browser dashboard for
+  1D and 2D simulations plus full Monte Carlo statistics.
+authors:
+  - family-names: Farina
+    given-names: "Mickaël"
+    email: mickaelfarinavance@yahoo.com
+    affiliation: "AVADSA Consulting LLC, Cheyenne, Wyoming, USA"
+version: "1.0.0"
+date-released: "2026-04-16"
+license: MIT
+repository-code: "https://github.com/AVADSA25/genesis-engine"
+url: "https://genesis-engine.lucyvpa.com"
+keywords:
+  - protocell
+  - origin-of-life
+  - reaction-diffusion
+  - Turing-pattern
+  - dissipative-structure
+  - Monte-Carlo
+  - agent-based-simulation
+  - spherical-manifold
+preferred-citation:
+  type: article
+  title: "Sequential Assembly of Biological Agency: Division Regularity Precedes Pattern Stability in Evolving Protocells"
+  authors:
+    - family-names: Farina
+      given-names: "Mickaël"
+  year: 2026
+  journal: "SSRN Electronic Journal"
+  url: "https://papers.ssrn.com"

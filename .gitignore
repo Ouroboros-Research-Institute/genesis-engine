@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# LaTeX build artifacts
+paper/submission/*.aux
+paper/submission/*.log
+paper/submission/*.out
+paper/submission/*.bbl
+paper/submission/*.blg
+paper/submission/*.toc
+paper/submission/*.synctex.gz
+paper/submission/*.fls
+paper/submission/*.fdb_latexmk
+
+# Logs
+*.log
+
+# Internal working notes (not published)
+CLAUDE_CODE_PROMPT.md
+
+# Large ad-hoc outputs
+/tmp_*/
+/scratch/

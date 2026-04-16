@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genesis Engine — Unified Trinity Framework</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">◇</span>
+    <span class="title">GENESIS ENGINE</span>
+    <span class="subtitle">/ Unified Trinity Framework</span>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-view="sim">LIVE 1D</button>
+    <button class="tab" data-view="sphere">LIVE 2D SPHERE</button>
+    <button class="tab" data-view="results">MONTE CARLO (N=500)</button>
+    <button class="tab" data-view="about">ABOUT · METHODS</button>
+  </nav>
+</header>
+
+<!-- ─────────────────── VIEW 1: LIVE SIMULATION ─────────────────── -->
+<main id="view-sim" class="view active">
+  <section class="stage">
+    <div class="canvas-wrap">
+      <canvas id="world" width="960" height="720"></canvas>
+      <div class="phase-overlay">
+        <div class="phase-row"><span class="phase-dot" id="pd-A"></span><span class="phase-label">A · PREBIOTIC</span></div>
+        <div class="phase-row"><span class="phase-dot" id="pd-B"></span><span class="phase-label">B · CLOCK</span></div>
+        <div class="phase-row"><span class="phase-dot" id="pd-C"></span><span class="phase-label">C · MAP</span></div>
+        <div class="phase-row"><span class="phase-dot" id="pd-D"></span><span class="phase-label">D · AGENCY</span></div>
+      </div>
+      <div class="tick-overlay">
+        <div><span class="k">tick</span><span class="v" id="o-tick">0</span></div>
+        <div><span class="k">phase</span><span class="v" id="o-phase">A</span></div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="panel-group">
+      <div class="panel-title">CONTROLS</div>
+      <div class="ctrl-row">
+        <button id="btn-play" class="btn primary">PAUSE</button>
+        <button id="btn-reset" class="btn">RESET</button>
+      </div>
+      <div class="ctrl-row speeds">
+        <button class="btn sp" data-speed="1">1×</button>
+        <button class="btn sp active" data-speed="2">2×</button>
+        <button class="btn sp" data-speed="5">5×</button>
+        <button class="btn sp" data-speed="10">10×</button>
+      </div>
+      <div class="ctrl-row export-row">
+        <button id="btn-export-ts"       class="btn" title="Aggregate time series (one row per sample tick)">↓ TIME SERIES</button>
+        <button id="btn-export-cells"    class="btn" title="Current state of every cell (genome, u/v arrays, energy…)">↓ CELL SNAPSHOT</button>
+      </div>
+      <div class="ctrl-row">
+        <button id="btn-export-bundle"   class="btn" title="Time series + cell snapshot + metadata as a single combined file">↓ FULL BUNDLE (.txt)</button>
+      </div>
+      <div class="hint">tip: pause first, then export — freezes the exact state.</div>
+    </div>
+
+    <div class="panel-group">
+      <div class="panel-title">STATE</div>
+      <div class="stats">
+        <div class="stat"><span class="k">POPULATION</span><span class="v" id="s-pop">—</span></div>
+        <div class="stat"><span class="k">RESOURCE</span><span class="v" id="s-res">—</span></div>
+        <div class="stat"><span class="k">PATTERN S̄</span><span class="v" id="s-s">—</span></div>
+        <div class="stat"><span class="k">DIVISION CV̄</span><span class="v" id="s-cv">—</span></div>
+        <div class="stat"><span class="k">DIVISIONS</span><span class="v" id="s-div">—</span></div>
+        <div class="stat"><span class="k">MAX GEN</span><span class="v" id="s-gen">—</span></div>
+      </div>
+    </div>
+
+    <div class="panel-group">
+      <div class="panel-title">TIME SERIES</div>
+      <div class="sparks">
+        <div class="spark"><div class="sp-label">POPULATION</div><canvas class="sp-canvas" id="sp-pop" width="260" height="46"></canvas></div>
+        <div class="spark"><div class="sp-label">PATTERN S</div><canvas class="sp-canvas" id="sp-s"   width="260" height="46"></canvas></div>
+        <div class="spark"><div class="sp-label">DIVISION CV</div><canvas class="sp-canvas" id="sp-cv"  width="260" height="46"></canvas></div>
+        <div class="spark"><div class="sp-label">RESOURCE</div><canvas class="sp-canvas" id="sp-res" width="260" height="46"></canvas></div>
+      </div>
+    </div>
+
+    <div class="panel-group">
+      <div class="panel-title">LATCHED TRANSITIONS<span class="info-tip" data-tip="Phase transitions are latched at first crossing — the statistical measure is whether the transition occurred, not whether it&#39;s currently holding. Current state may drift as the system evolves.">?</span></div>
+      <div class="phase-events">
+        <div class="ev"><span class="k">B · CLOCK</span><span class="v" id="ev-B">—</span></div>
+        <div class="ev"><span class="k">C · MAP</span><span class="v" id="ev-C">—</span></div>
+        <div class="ev"><span class="k">D · AGENCY</span><span class="v" id="ev-D">—</span></div>
+      </div>
+    </div>
+
+    <div class="panel-group current-state">
+      <div class="panel-title">CURRENT STATE<span class="cs-badge" id="cs-badge">A</span></div>
+      <div class="cs-row">
+        <span class="cs-k">DIVISION CV</span>
+        <span class="cs-v" id="cs-cv-v">—</span>
+        <span class="cs-gate" id="cs-cv-gate"></span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-k">PATTERN S</span>
+        <span class="cs-v" id="cs-s-v">—</span>
+        <span class="cs-gate" id="cs-s-gate"></span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-k">MAX GEN</span>
+        <span class="cs-v" id="cs-gen-v">—</span>
+        <span class="cs-gate" id="cs-gen-gate"></span>
+      </div>
+    </div>
+
+    <div class="panel-group legend">
+      <div class="panel-title">LEGEND</div>
+      <div class="lg-row"><span class="swatch" style="background:#50ddff"></span>ORGANIZED (S ≥ 0.55)</div>
+      <div class="lg-row"><span class="swatch" style="background:#58d78a"></span>EMERGING (0.25 ≤ S &lt; 0.55)</div>
+      <div class="lg-row"><span class="swatch" style="background:#ffb347"></span>UNSTABLE (0.08 ≤ S &lt; 0.25)</div>
+      <div class="lg-row"><span class="swatch" style="background:#e45759"></span>CHAOTIC (S &lt; 0.08)</div>
+    </div>
+  </aside>
+</main>
+
+<!-- ─────────────────── VIEW 1b: LIVE 2D SPHERE ─────────────────── -->
+<main id="view-sphere" class="view">
+  <section class="stage">
+    <div class="canvas-wrap">
+      <canvas id="world2d" width="960" height="720"></canvas>
+      <div class="phase-overlay">
+        <div class="phase-row"><span class="phase-dot" id="pd2-A"></span><span class="phase-label">A · PREBIOTIC</span></div>
+        <div class="phase-row"><span class="phase-dot" id="pd2-B"></span><span class="phase-label">B · CLOCK</span></div>
+        <div class="phase-row"><span class="phase-dot" id="pd2-C"></span><span class="phase-label">C · MAP</span></div>
+        <div class="phase-row"><span class="phase-dot" id="pd2-D"></span><span class="phase-label">D · AGENCY</span></div>
+      </div>
+      <div class="tick-overlay">
+        <div><span class="k">tick</span><span class="v" id="o2-tick">0</span></div>
+        <div><span class="k">phase</span><span class="v" id="o2-phase">A</span></div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="panel-group">
+      <div class="panel-title">SPHERE CONTROLS</div>
+      <div class="ctrl-row">
+        <button id="btn2-play" class="btn primary">PAUSE</button>
+        <button id="btn2-reset" class="btn">RESET</button>
+      </div>
+      <div class="ctrl-row speeds">
+        <button class="btn sp2" data-speed="1">1×</button>
+        <button class="btn sp2 active" data-speed="2">2×</button>
+        <button class="btn sp2" data-speed="4">4×</button>
+      </div>
+      <div class="ctrl-row export-row">
+        <button id="btn2-export-ts"       class="btn" title="Aggregate time series for this 2D run">↓ TIME SERIES</button>
+        <button id="btn2-export-cells"    class="btn" title="Current state of every cell (genome + full 642-vertex u/v fields)">↓ CELL SNAPSHOT</button>
+      </div>
+      <div class="ctrl-row">
+        <button id="btn2-export-bundle"   class="btn" title="Time series + cell snapshot + metadata as a single combined file">↓ FULL BUNDLE (.txt)</button>
+      </div>
+      <div class="hint">642-vertex icosphere · RD_STEPS=90 · α=0.40 rescaled Gray-Scott.
+        Capped at 30 cells for real-time rendering. Pause before exporting.</div>
+    </div>
+
+    <div class="panel-group">
+      <div class="panel-title">STATE</div>
+      <div class="stats">
+        <div class="stat"><span class="k">POPULATION</span><span class="v" id="s2-pop">—</span></div>
+        <div class="stat"><span class="k">RESOURCE</span><span class="v" id="s2-res">—</span></div>
+        <div class="stat"><span class="k">PATTERN S̄</span><span class="v" id="s2-s">—</span></div>
+        <div class="stat"><span class="k">DIVISION CV̄</span><span class="v" id="s2-cv">—</span></div>
+        <div class="stat"><span class="k">DIVISIONS</span><span class="v" id="s2-div">—</span></div>
+        <div class="stat"><span class="k">MAX GEN</span><span class="v" id="s2-gen">—</span></div>
+      </div>
+    </div>
+
+    <div class="panel-group">
+      <div class="panel-title">TIME SERIES</div>
+      <div class="sparks">
+        <div class="spark"><div class="sp-label">POPULATION</div><canvas class="sp-canvas" id="sp2-pop" width="260" height="46"></canvas></div>
+        <div class="spark"><div class="sp-label">PATTERN S</div><canvas class="sp-canvas" id="sp2-s"   width="260" height="46"></canvas></div>
+        <div class="spark"><div class="sp-label">DIVISION CV</div><canvas class="sp-canvas" id="sp2-cv"  width="260" height="46"></canvas></div>
+        <div class="spark"><div class="sp-label">RESOURCE</div><canvas class="sp-canvas" id="sp2-res" width="260" height="46"></canvas></div>
+      </div>
+    </div>
+
+    <div class="panel-group">
+      <div class="panel-title">LATCHED TRANSITIONS<span class="info-tip" data-tip="Phase transitions are latched at first crossing — the statistical measure is whether the transition occurred, not whether it&#39;s currently holding. Current state may drift as the system evolves.">?</span></div>
+      <div class="phase-events">
+        <div class="ev"><span class="k">B · CLOCK</span><span class="v" id="ev2-B">—</span></div>
+        <div class="ev"><span class="k">C · MAP</span><span class="v" id="ev2-C">—</span></div>
+        <div class="ev"><span class="k">D · AGENCY</span><span class="v" id="ev2-D">—</span></div>
+      </div>
+    </div>
+
+    <div class="panel-group current-state">
+      <div class="panel-title">CURRENT STATE<span class="cs-badge" id="cs2-badge">A</span></div>
+      <div class="cs-row">
+        <span class="cs-k">DIVISION CV</span>
+        <span class="cs-v" id="cs2-cv-v">—</span>
+        <span class="cs-gate" id="cs2-cv-gate"></span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-k">PATTERN S</span>
+        <span class="cs-v" id="cs2-s-v">—</span>
+        <span class="cs-gate" id="cs2-s-gate"></span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-k">MAX GEN</span>
+        <span class="cs-v" id="cs2-gen-v">—</span>
+        <span class="cs-gate" id="cs2-gen-gate"></span>
+      </div>
+    </div>
+
+    <div class="panel-group legend">
+      <div class="panel-title">GEOMETRY</div>
+      <div class="lg-row"><span class="swatch" style="background:#50ddff"></span>642 verts · 1280 faces · sub=3</div>
+      <div class="lg-row"><span class="swatch" style="background:#58d78a"></span>Cotangent Laplace-Beltrami Δ</div>
+      <div class="lg-row"><span class="swatch" style="background:#ffb347"></span>Calibrated α=0.40 (Da, Db)</div>
+    </div>
+  </aside>
+</main>
+
+<!-- ─────────────────── VIEW 2: MONTE CARLO RESULTS ─────────────────── -->
+<main id="view-results" class="view">
+  <div class="results-wrap">
+
+    <section class="headline">
+      <div class="headline-num">100<span class="pct">%</span></div>
+      <div class="headline-text">
+        Clock preceded Map in <span class="hl">482 / 482</span> runs where both phases were reached.
+        <span class="muted">N = 500 independent seeds · 80,000 ticks each</span>
+      </div>
+    </section>
+
+    <section class="kpi-row">
+      <div class="kpi"><div class="kpi-k">BINOMIAL p</div><div class="kpi-v" id="kpi-binom">8.01 × 10⁻¹⁴⁶</div></div>
+      <div class="kpi"><div class="kpi-k">WILCOXON p</div><div class="kpi-v" id="kpi-wilcox">1.66 × 10⁻⁹⁸</div></div>
+      <div class="kpi"><div class="kpi-k">MEAN C − B DELAY</div><div class="kpi-v" id="kpi-delay">243 ticks</div></div>
+      <div class="kpi"><div class="kpi-k">HEDGES' g</div><div class="kpi-v" id="kpi-g">9.41</div></div>
+    </section>
+
+    <section class="quote">
+      <blockquote>
+        In N = 500 independent simulations of an evolving protocell population, the division-regularity phase
+        (Clock) preceded the pattern-stability phase (Map) in 482 of 482 runs where both phase transitions
+        occurred (100 %; binomial test p = 8.01 × 10⁻¹⁴⁶). The mean Clock → Map delay was 243 ± 2316 ticks
+        (Wilcoxon signed-rank W = 116 403, p = 1.66 × 10⁻⁹⁸). Populations that achieved stable patterns
+        (S &gt; 0.3, N = 482) outperformed disorganized populations (S &lt; 0.1, N = 18) with Hedges' g = 9.41.
+      </blockquote>
+      <div class="quote-caption">— Proposed manuscript sentence · Farina 2025</div>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <div class="card-title">PHASE DISTRIBUTION</div>
+        <table class="tbl" id="phase-table">
+          <thead><tr><th>FINAL PHASE</th><th>COUNT</th><th>%</th></tr></thead>
+          <tbody id="phase-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title">TRANSITION TIMES</div>
+        <table class="tbl">
+          <thead><tr><th>PHASE</th><th>MEAN (ticks)</th><th>MEDIAN</th><th>REACHED</th></tr></thead>
+          <tbody>
+            <tr><td>Clock (B)</td><td id="tr-Bmean">—</td><td id="tr-Bmed">—</td><td id="tr-Bn">—</td></tr>
+            <tr><td>Map (C)</td><td id="tr-Cmean">—</td><td id="tr-Cmed">—</td><td id="tr-Cn">—</td></tr>
+            <tr><td>Agency (D)</td><td id="tr-Dmean">—</td><td id="tr-Dmed">—</td><td id="tr-Dn">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card ablations hidden" id="ablation-section">
+      <div class="card-title">PARAMETER SENSITIVITY — ablation study</div>
+      <div class="ablation-subtitle" id="ablation-subtitle"></div>
+      <table class="tbl ablation-tbl">
+        <thead>
+          <tr>
+            <th>PARAMETER</th>
+            <th>LOW</th>
+            <th>BASELINE</th>
+            <th>HIGH</th>
+            <th>ROBUST?</th>
+          </tr>
+        </thead>
+        <tbody id="ablation-tbody"></tbody>
+      </table>
+      <div class="ablation-foot" id="ablation-foot"></div>
+    </section>
+
+    <section class="figures">
+      <div class="fig">
+        <div class="fig-title">FIG 1 · Phase transition distributions</div>
+        <img src="results/figures/phase_transitions.png" alt="Phase transitions">
+      </div>
+      <div class="fig">
+        <div class="fig-title">FIG 2 · Clock vs Map (per-run scatter)</div>
+        <img src="results/figures/clock_vs_map.png" alt="Clock vs Map">
+      </div>
+      <div class="fig full">
+        <div class="fig-title">FIG 3 · Example simulation traces</div>
+        <img src="results/figures/example_timeseries.png" alt="Example time series">
+      </div>
+    </section>
+
+    <section class="card" id="jobs-card">
+      <div class="card-title">
+        BACKGROUND JOBS
+        <span class="jobs-stamp" id="jobs-stamp"></span>
+      </div>
+      <div id="jobs-list" class="jobs-list">
+        <div class="job-row"><span class="job-name">loading…</span></div>
+      </div>
+      <div class="jobs-foot">Polled every 5 s from <code>/api/status</code>.</div>
+    </section>
+
+    <section class="meta" id="meta-box"></section>
+
+  </div>
+</main>
+
+<!-- ─────────────────── VIEW 4: ABOUT / METHODS ─────────────────── -->
+<main id="view-about" class="view">
+  <div class="about-wrap">
+
+    <section class="headline about-hero">
+      <div class="headline-text">
+        <span class="hl">Genesis Engine</span> is a minimal computational model that asks
+        whether biological agency must be assembled in a particular order.
+        <span class="muted">Clock → Map → Agency · ordered in 482 of 482 runs · N = 500 seeds</span>
+      </div>
+    </section>
+
+    <section class="about-grid">
+
+      <!-- ROW 1 — the claim -->
+      <div class="card about-card span-2">
+        <div class="card-title">THE CLAIM</div>
+        <p>
+          We define three sequential observables on an evolving protocell population:
+          a <b>Clock</b> (regular division), a <b>Map</b> (spatially stable pattern),
+          and <b>Agency</b> (the two persisting jointly across generations). In
+          <span class="accent">482 of 482</span> independent simulations where both
+          Clock and Map were reached, Clock latched first. The binomial p-value is
+          <span class="accent">8.01 × 10⁻¹⁴⁶</span>; the Wilcoxon signed-rank p is
+          <span class="accent">1.66 × 10⁻⁹⁸</span>. Hedges' g between stable
+          and disorganized populations is <span class="accent">9.41</span>.
+        </p>
+        <p class="sub">
+          That is the only claim. Everything below is the bookkeeping that makes it testable.
+        </p>
+      </div>
+
+      <!-- ROW 2 — the four phases -->
+      <div class="card about-card span-2">
+        <div class="card-title">THE FOUR PHASES</div>
+        <table class="tbl about-tbl">
+          <thead>
+            <tr><th>PHASE</th><th>PREDICATE</th><th>MEANING</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="phase-badge phase-A">A</span> PREBIOTIC</td>
+              <td class="mono">default</td>
+              <td>No transition has latched yet.</td>
+            </tr>
+            <tr>
+              <td><span class="phase-badge phase-B">B</span> CLOCK</td>
+              <td class="mono">CV &lt; 0.25</td>
+              <td>Division intervals become regular.</td>
+            </tr>
+            <tr>
+              <td><span class="phase-badge phase-C">C</span> MAP</td>
+              <td class="mono">(after B) &nbsp; S̄ &gt; 0.25</td>
+              <td>Stable spatial pattern held across the population.</td>
+            </tr>
+            <tr>
+              <td><span class="phase-badge phase-D">D</span> AGENCY</td>
+              <td class="mono">(after C) &nbsp; S̄ &gt; 0.35 ∧ CV &lt; 0.30 ∧ gen ≥ 5</td>
+              <td>Clock and Map persist across at least five lineal generations.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="sub">
+          Thresholds are observer-imposed; the <em>ordering</em> is robust to
+          ±30% perturbation of every cutoff — see the ablation table on the
+          Monte Carlo tab.
+        </p>
+      </div>
+
+      <!-- ROW 3 — metrics -->
+      <div class="card about-card">
+        <div class="card-title">PATTERN STABILITY · S</div>
+        <p>
+          S is the population-mean coherence of the reaction-diffusion
+          v-field across divisions. Each daughter inherits a perturbed
+          copy of the parent's field; if the pattern survives that
+          perturbation and the subsequent RD relaxation, S → 1. If the
+          pattern randomizes, S → 0. Computed as the maximum normalized
+          circular cross-correlation between parent and daughter v-vectors,
+          averaged over the living population.
+        </p>
+        <p class="sub">
+          S captures <em>heritable spatial structure</em>, which is what
+          makes a pattern a "map" rather than an accident.
+        </p>
+      </div>
+
+      <div class="card about-card">
+        <div class="card-title">DIVISION CV</div>
+        <p>
+          CV = σ/μ of the last three division intervals, averaged across
+          cells that have completed ≥3 divisions. A cell that divides on
+          a steady beat has CV → 0; a cell that divides irregularly has
+          CV → 1.
+        </p>
+        <p class="sub">
+          CV is capped at 1.0 during startup (fewer than three divisions
+          yet) — that is why CV=1.000 is so common in the first ~2000
+          ticks of a fresh 2D run.
+        </p>
+      </div>
+
+      <!-- ROW 4 — latched vs current -->
+      <div class="card about-card span-2 about-latched">
+        <div class="card-title">LATCHED TRANSITIONS vs CURRENT STATE</div>
+        <div class="about-two">
+          <div>
+            <div class="sub-title">LATCHED</div>
+            <p>
+              Each phase latches at the <em>first</em> tick its predicate
+              is satisfied, given the ordering constraint (B before C, C
+              before D, D additionally requires gen ≥ 5). Once latched,
+              always latched — even if the population briefly stops
+              satisfying the predicate later. This is the quantity the
+              Monte Carlo tabulates.
+            </p>
+          </div>
+          <div>
+            <div class="sub-title">CURRENT STATE</div>
+            <p>
+              Shows whether the predicate is satisfied <em>right now</em>,
+              with explicit gate markers (CV &lt; 0.25 ✓, CV &lt; 0.30 ✗,
+              …). A population can hit Map, then drift back under the
+              threshold: LATCHED still shows C, CURRENT STATE shows B.
+              That drift is real biology, not a bug.
+            </p>
+          </div>
+        </div>
+        <p class="sub">
+          The paper's statistic asks <em>"did Clock come before Map?"</em>,
+          not <em>"is Clock currently holding?"</em>. Splitting the two
+          displays is what keeps that distinction honest.
+        </p>
+      </div>
+
+      <!-- ROW 5 — three tabs explained -->
+      <div class="card about-card span-2">
+        <div class="card-title">READING THE THREE TABS</div>
+        <div class="about-tabs">
+          <div class="about-tab-item">
+            <div class="about-tab-badge">LIVE 1D</div>
+            <p>
+              24-node ring membrane, RD_STEPS = 3, MAX_CELLS = 100.
+              Fast, deterministic-looking, usually reaches phase D
+              within ~6000 ticks. This is the configuration the N=500
+              Monte Carlo uses.
+            </p>
+          </div>
+          <div class="about-tab-item">
+            <div class="about-tab-badge">LIVE 2D SPHERE</div>
+            <p>
+              642-vertex icosphere (sub = 3), cotangent Laplacian,
+              RD_STEPS = 90, α = 0.40, MAX_CELLS = 30. Spatially
+              expressive but sensitive to seed — some runs reach D by
+              ~5500 ticks, others get trapped with high S but CV
+              plateau. Use CURRENT STATE to see why a given seed stalls.
+            </p>
+          </div>
+          <div class="about-tab-item">
+            <div class="about-tab-badge">MONTE CARLO</div>
+            <p>
+              Pre-computed batched 1D runs (N = 500, 80 000 ticks each)
+              aggregated offline. This tab carries the statistical
+              weight — the live tabs are existence proofs, not
+              evidence.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 6 — honesty block -->
+      <div class="card about-card span-2 about-caveats">
+        <div class="card-title">WHAT THIS MODEL IS NOT</div>
+        <ul class="caveat-list">
+          <li>
+            <b>Not a faithful protocell.</b> The membrane is a ring or
+            sphere with two chemicals (u, v) and a division-on-growth
+            rule. No metabolism, no real genome, no chemistry.
+          </li>
+          <li>
+            <b>Not a claim about chemistry.</b> The ordering result is
+            compositional — <em>how temporal regularity and spatial
+            stability assemble</em> — not a prediction about specific
+            abiogenesis pathways.
+          </li>
+          <li>
+            <b>Live 2D ≠ statistical evidence.</b> The MAX_CELLS = 30
+            cap is for real-time rendering. Single seeds can stall.
+            Ordering is proven across the Monte Carlo ensemble, not
+            within any one live run.
+          </li>
+          <li>
+            <b>Observer-imposed thresholds.</b> B_CV = 0.25, C_S = 0.25,
+            D_S = 0.35, D_CV = 0.30, D_GEN = 5. Robust to ±30%
+            perturbation; see ablation table.
+          </li>
+        </ul>
+      </div>
+
+      <!-- ROW 7 — reproducibility -->
+      <div class="card about-card span-2">
+        <div class="card-title">REPRODUCIBILITY</div>
+        <p class="mono small">
+          git clone &lt;repo&gt;<br>
+          cd genesis-engine<br>
+          python -m paper.scripts.run_500 --seeds 500 --ticks 80000<br>
+          python -m paper.scripts.analyze_results
+        </p>
+        <p class="sub">
+          Each seed is a full simulation; results are saved as JSON and
+          aggregated in <code>paper/paper_data.json</code>. Dashboard
+          loads that JSON directly — the numbers on the Monte Carlo tab
+          come straight from the artefact produced by the commands above.
+        </p>
+      </div>
+
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer">
+  FARINA 2025 · UNIFIED TRINITY FRAMEWORK · SEQUENTIAL ASSEMBLY OF BIOLOGICAL AGENCY
+</footer>
+
+<script type="module" src="genesis.js"></script>
+<script type="module" src="results.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
